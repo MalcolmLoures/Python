@@ -1,0 +1,36 @@
+{% load filtros %}
+
+<div class="table-responsive">
+    <table class="table">
+        <tr>
+            <th class="d-none d-lg-block">Imagem</th>
+            <th>Produto</th>
+            <th>V.</th>
+            <th>QTD.</th>
+            <th>Total</th>
+        </tr>
+
+        {% for item in carrinho.values %}
+        <tr>
+            <td class="d-none d-lg-block">
+                <img class="cart-img" src="{{item.imagem}}">
+            </td>
+            <td>
+                {{ item.produto_nome }}
+                <a class="ml-3" href="{% url "produto:removerdocarrinho" %}?vid={{item.variacao_id}}">
+                    <i class="fas fa-times-circle text-danger" aria-hidden="true"></i>
+                </a>
+            </td>
+            <td>{{item.variacao_nome}}</td>
+            <td>{{item.quantidade}}x</td>
+
+            {% if item.preco_quantitativo_promocional %}
+                <td>{{item.preco_quantitativo_promocional|formata_preco}}</td>
+            {% else %}
+                <td>{{item.preco_quantitativo|formata_preco}}</td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+
+    </table>
+</div>

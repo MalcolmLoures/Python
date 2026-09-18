@@ -1,0 +1,11 @@
+{% extends "global/base.html" %}
+{% block content %}
+  <h1>{{form_title}}</h1>
+  <div class="form-wrapper">
+
+    <h2>{{form_title}}</h2>
+
+    {% include "user/partials/_user_form.html" %}
+
+  </div>
+{% endblock content %}

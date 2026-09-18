@@ -1,0 +1,308 @@
+{% load static %}
+
+<html>
+    <head>
+        <title>Data Tool</title>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="{% static 'bootstrap\css\bootstrap.css' %}">
+        <link rel="stylesheet" href="{% static 'custom/css/style.css' %}">
+        <script src="{% static "custom/js/eventos.js" %}"></script>
+    </head>
+    <body>
+
+        <main>
+            <form id="formMain" name="formMain" method="POST" action="{% url "proc:format" %}">
+                {% csrf_token %}
+                <div class="row">    
+                
+                    <div class="col-lg mt-3">
+    
+                        <table border="0" width="100%" style="margin-left:10px">
+                            <tr>
+                                <td width="30%">
+                                    <fieldset>
+                                        <legend><b>Input Settings:</b></legend>
+                                        
+                                        <input type="checkbox" id="HasHeader" 
+                                            name="HasHeader"
+                                            style="margin-left:10px"
+                                            value="true"
+                                         />
+                                        <label for="HasHeader">Contains header</label>
+
+                                        <fieldset style="margin-left:10px">
+                                            <legend>Delimiter:</legend>
+                                            
+                                            <div>
+                                                <input type="radio" id="rdTab" 
+                                                    name="rdDelimiter"
+                                                    style="margin-left:10px" 
+                                                    checked="true" 
+                                                    value="tab" />
+                                                <label for="rdTab">Tabulation</label>
+                                            </div>
+
+                                            <div>
+                                                <input type="radio" id="rdComa" name="rdDelimiter"
+                                                    style="margin-left:10px" 
+                                                    value="semicolon" />
+                                                <label for="rdComa">Semicolon (;)</label>
+                                            </div>
+                                            
+                                            <div>
+                                                <input type="radio" id="rdFixedWidth" 
+                                                    name="rdDelimiter" 
+                                                    style="margin-left:10px" 
+                                                    value="fixed"   />
+                                                    
+                                                <label for="rdFixedWidth">Fixed-width columns</label>
+                                            </div>
+
+                                            <div>
+                                                <input type="radio" id="rdOther" 
+                                                    name="rdDelimiter" 
+                                                    style="margin-left:10px"
+                                                    value="other"
+                                                    onclick="txtOther.focus();" />
+                                                <label for="rdOther">Other</label>
+                                                <input type="text" 
+                                                    id="txtOther" 
+                                                    name="txtOther" size="1px" 
+                                                style="margin-left:5px" maxlength="1" />
+                                            </div>
+
+                                        </fieldset>
+                                    </fieldset>
+                                </td>
+
+                                <td width="50%">
+                                    <fieldset>
+                                        <legend><b>Field Settings:</b></legend>
+
+                                        <select id="selColumns"
+                                            name="selColumns" 
+                                            multiple style="width:100%; margin-top:5px" 
+                                            onInput="FieldSelect(this);"
+                                        >
+                                        </select>
+                                        <input type="hidden" id="listFields" name="listFields" multiple />
+                                    </fieldset>
+                                </td>
+
+                                <td width="20%">
+                                    <div>
+                                        <input type="button" id="btnKeyField" 
+                                            name="btnKeyField" 
+                                            value="Add to Key list >>"
+                                            style="margin-left: 10px; width:150px"
+                                            class='btn btn-primary'
+                                            onclick="AddKeyList();"
+                                        />
+
+                                    </div>        
+                                    <div style="margin-top: 5px;">
+                                        <label for="selType" style="margin-left: 10px;">Select Type:</label>
+                                    </div>
+                                    <div>
+                                        <select id="selType" 
+                                            name="selType" 
+                                            style="margin-left: 10px; width:150px"
+                                            onInput="SelectType_Input(this)" 
+                                        >
+                                            <option value="text" selected>Text</option>
+                                            <option value="integer">Integer</option>
+                                            <option value="float">Float</option>
+                                            <option value="date">Datetime</option>
+                                            <option value="sqlexp">SQL Expression</option>
+                                        </select>
+                                    </div>
+                                    <div style="margin-top: 5px;">
+                                        <label for="txtSize" style="margin-left: 10px;">Size:</label>
+                                    </div>
+                                    <div>
+                                        <input type="text" id="txtSize" name="txtSize"
+                                            style="margin-left: 10px;"    
+                                            size="10" maxlength="10"
+                                            onInput="Size_Input(this)"
+                                            value="10"
+                                        >
+                                    </div>                                        
+                                    
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">
+                                    <fieldset style="margin-top:5px">
+                                        <legend><b>Past your data text here (with columns header):</b></legend>
+                                        <div>
+                                            <textarea id="textData" 
+                                                name="textData" 
+                                                style="width: 100%; height: 443px;"
+                                                onInput="DataText_Input(this)"
+                                            ></textarea>
+                                        </div>
+                                    </fieldset>
+                                </td>
+                            </tr>  
+
+                            <tr>
+                                <td colspan="3">
+                                    <div class="row" style="margin-top: 5px;">
+                                        <div class="col">
+                                            <button type="button" id="btnClearForm" name="btnClearForm"
+                                                onclick="javascript:window.location.href='{% url "proc:new" %}'" 
+                                                class='btn btn-primary btn-block btn-lg'>
+                                                Clear
+                                            </button>
+                                        </div>
+                                        <div class="col">
+                                            <button id="btnEnviar" type="button" 
+                                                name="btnEnviar"  
+                                                onclick="Enviar()"
+                                                class='btn btn-primary btn-block btn-lg'>
+                                                Send
+                                            </button>
+                                        </div>
+                                    </div>    
+                                </td>
+                            </tr>                                            
+                        </table>                            
+                
+                    </div>
+                
+                    <div class="col-lg mt-3" style="border: 1px;">                
+                        
+                        <table border="0" width="100%" style="margin-left:10px">
+                            <tr>
+                                <td width="30%">
+                                    <fieldset>
+                                        <legend><b>Output Settings:</b></legend>                        
+
+                                        <fieldset style="margin-left:10px">
+                                            <legend>Result as:</legend>
+                                            
+                                            <div>
+                                                <input type="radio" 
+                                                    id="rdSQLInsert" 
+                                                    name="rdResultAs"
+                                                    style="margin-left:10px" 
+                                                    checked="true" />
+                                                <label for="rdComa">SQL Insert Statement</label>
+                                            </div>
+
+                                            <div>
+                                                <input type="radio" 
+                                                    id="rdSQLUpdate" 
+                                                    name="rdResultAs"
+                                                    style="margin-left:10px" />
+                                                <label for="rdComa">SQL Update Statement</label>
+                                            </div>
+
+                                            <div>
+                                                <input type="radio" 
+                                                    id="rdSQLInsert" 
+                                                    name="rdResultAs"
+                                                    style="margin-left:10px" />
+                                                <label for="rdComa">Comma-separated values</label>
+                                            </div>
+
+                                            <div>
+                                                <input type="radio" 
+                                                    id="rdSQLInsert" 
+                                                    name="rdResultAs"
+                                                    style="margin-left:10px"  />
+                                                <label for="rdComa">Fixed-width columns</label>
+                                            </div>
+
+                                        </fieldset>
+                                    </fieldset>
+                                </td>
+
+                                <td width="50%">
+                                    <fieldset>
+                                        <legend><b>Key Fields:</b></legend>
+                                        </select>
+
+                                            <select id="selKeyFields"
+                                                name="selKeyFields" 
+                                                multiple 
+                                                style="width:100%; margin-top:5px" 
+                                            >
+                                            </select>
+
+                                            <input type="hidden" id="listKeys" name="listKeys" multiple />
+                                        
+                                            <input type="button" 
+                                                id="btnClearKeyField" 
+                                                name="btnClearKeyField" 
+                                                value="Clear Key Fields"
+                                                style="margin-top: 5px; width:150px"
+                                                class='btn btn-primary'
+                                                onclick='ClearList(selKeyFields)'
+                                                
+                                            />
+                                                    
+                                    </fieldset>
+                                </td>
+
+                                <td width="20%" rowspan="2">
+
+                                        <div style="margin-top: 5px;">
+                                            <label for="selDBProvider" style="margin-left: 10px;">Select DB Provider:</label>
+                                        </div>
+                                        <div>
+                                            <select id="selDBProvider" name="selDBProvider"
+                                                 style="margin-left: 10px; width:150px" >
+                                                <option value="oracle" selected>Oracle Database</option>
+                                                <option value="sqlserver">SQL Server</option>
+                                            </select>
+                                        </div>
+     
+                                    
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <label for="txtTargetTableName">Target table name:</label>
+                                    <input type="text" id="txtTargetTableName" 
+                                            name="txtTargetTableName"
+                                            style="margin-left:5px"
+                                            size="60px" />
+                                    
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">
+                                    <fieldset style="margin-top:5px">
+                                        <legend><b>Result:</b></legend>
+                                        <div>
+                                            <textarea id="textResult" name="textResult" style="width: 100%; height: 443px;"></textarea>
+                                        </div>
+                                    </fieldset>
+                                </td>
+                            </tr>  
+
+                            <tr>
+                                <td colspan="3">
+                                    <div class="row" style="margin-top: 5px;">
+                                        <div class="col">
+                                            <button type="button" id="btnCopy" 
+                                                name="btnCopy" 
+                                                class='btn btn-primary btn-block btn-lg'
+                                                onclick="Copy(textResult.value)"
+                                            >
+                                                Copy to clipboard
+                                            </button>
+                                        </div>
+                                    </div>    
+                                </td>
+                            </tr>                                            
+                        </table>      
+        
+                    </div>
+                
+                </div>
+            </form>
+        </main>   
+    </body>
+</html>
